@@ -1,0 +1,54 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="form-control">
+    <label class="form-label">請輸入圖片網址</label>
+    <input type="text" class="form-control" id="inputImage"/>
+</div>
+
+<div class="form-control">
+    <img src="~/images/no-image-found-360x250.png" />
+</div>
+
+<div class="form-control">
+    <input type="button" class="form-control" value="送出圖片" id="btnSubmit" />
+</div>
+@section Scripts {
+    <script>
+        const btnSubmit = document.getElementById("btnSubmit");
+        const key = "99e33dcbd6f9443bb351d3db29ededcd";
+        const port = "https://msit15800vision.cognitiveservices.azure.com";
+        btnSubmit.addEventListener("click", () => {
+            var params = {
+                "visualFeatures": "Description,Tags",
+                "language": "en",
+                "model-version": "latest",
+            };
+            var imageUrl = document.getElementById("inputImage").value;
+            document.querySelector("img").src = imageUrl;
+            $.ajax({
+                url: `${port}/vision/v3.2/analyze?` + $.param(params),
+                beforeSend: function (xhrObj) {
+                    xhrObj.setRequestHeader("Content-Type", "application/json");
+                    xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key);
+                },
+                type: "POST",
+                data: JSON.stringify({ url: imageUrl }),
+            })
+                .done(function (data) {
+                    console.log(data);
+                })
+                .fail(function () {
+                    alert("error");
+                });
+        })
+
+    </script>
+}
+@section Styles {
+    <style>
+
+    </style>
+}
